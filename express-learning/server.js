@@ -1,69 +1,107 @@
+const mongoose = require("mongoose");
+
 const express = require("express");
 
 const app = express();
 
+
 app.use(express.json());
 
-let students = [
-  { id: 1, name: "Rahul" },
-  { id: 2, name: "Arjun" },
-  { id: 3, name: "Shalbin" }
-];
+mongoose
+  .connect(
+    "mongodb+srv://shalbinms:XiDXYLisD%40Rin2.@cluster0.93rja.mongodb.net/?appName=Cluster0",
+  )
+  .then(() => {
+    console.log("MongoDB Connected");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
-app.get("/students/:id", (req, res) => {
-  const id = Number(req.params.id);
+  
 
-  const student = students.find((s) => s.id === id);
 
-  if (!student) {
-    return res.status(404).json({
-      message: "Student not found",
+const studentSchema = new mongoose.Schema({
+  name: String,
+});
+
+const Student = mongoose.model("Student", studentSchema);
+
+app.post("/students", async (req, res) => {
+  try {
+    const student = await Student.create({
+      name: req.body.name,
+    });
+
+    res.json(student);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
     });
   }
-
-  res.json(student);
 });
 
-app.post("/students", (req, res) => {
-  const student = req.body;
-
-  students.push(student);
-
-  res.json({
-    message: "Student Added",
-  });
+app.use((req, res, next) => {
+  console.log(req.method);
+  next();
 });
 
-app.put("/students/:id", (req, res) => {
-  const id = Number(req.params.id);
+app.get("/students/:id", async (req, res) => {
+  try {
+    const students = await Student.findById(req.params.id);
 
-  const student = students.find((s) => s.id === id);
-
-  if (!student) {
-    return res.status(404).json({
-      message: "Student not found",
+    res.json(students);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
     });
   }
-
-  student.name = req.body.name;
-
-  res.json({
-    message: "Student Updated",
-  });
 });
 
-app.delete("/students/:id" , (req,res) => {
-    const id = Number(req.params.id);
+app.use((req, res, next) => {
+  console.log(req.method);
+  next();
+});
 
-    const student = students.filter((s) => s.id !== id);
+app.put("/students/:id", async (req, res) => {
+  try {
+    const student = await Student.findByIdAndUpdate(
+      req.params.id,
+      {
+        name: req.body.name,
+      },
+      {
+        new: true,
+      },
+    );
 
+    res.json(student);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+});
+
+app.use((req, res, next) => {
+  console.log(req.method);
+  next();
+});
+
+app.delete("/students/:id", async (req, res) => {
+  try {
+    const student = await Student.findByIdAndDelete(req.params.id);
 
     res.json({
-      message: "Student Deleted",
+      message: "Student deleted",
+      student,
     });
-    
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
 });
-
 app.listen(5000, () => {
   console.log("Server Running");
 });
