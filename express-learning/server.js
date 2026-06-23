@@ -3,13 +3,21 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 
+const errorHandler = require("./middleware/errorMiddleware");
+
 const studentRoutes = require("./routes/studentRoutes");
+
+const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
 app.use(express.json());
 
 app.use("/students", studentRoutes);
+
+app.use("/api/users", userRoutes);
+
+app.use(errorHandler);
 
 mongoose
   .connect(process.env.MONGO_URI)

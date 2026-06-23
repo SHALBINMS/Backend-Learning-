@@ -1,17 +1,15 @@
 const Student = require("../models/Student");
 
-const getStudents = async (req, res) => {
+const getStudents = async (req, res, next) => {
   try {
     const students = await Student.find();
     res.json(students);
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const createStudent = async (req, res) => {
+const createStudent = async (req, res, next) => {
   try {
     const student = await Student.create({
       name: req.body.name,
@@ -27,39 +25,39 @@ const createStudent = async (req, res) => {
       });
     }
 
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const getStudentById = async (req, res) => {
+const getStudentById = async (req, res, next) => {
   try {
     const student = await Student.findById(req.params.id);
+    
+     if (!student) {
+       res.status(404);
+       throw new Error("Student not found");
+     }
 
     res.json(student);
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+   next(error);
   }
 };
 
-const updateStudent = async (req, res) => {
+const updateStudent = async (req, res, next) => {
   try {
     const student = await Student.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
+      runValidators: true,
     });
 
     res.json(student);
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const deleteStudent = async (req, res) => {
+const deleteStudent = async (req, res,next) => {
   try {
     const student = await Student.findByIdAndDelete(req.params.id);
 
@@ -68,9 +66,7 @@ const deleteStudent = async (req, res) => {
       student,
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 };
 
