@@ -42,3 +42,9 @@ mongoose
     console.error("MongoDB connection failed:", err);
     process.exit(1);
   });
+
+  app.get("/", (req, res) => {
+    res.json({
+      message: "Backend API Running",
+    });
+  });

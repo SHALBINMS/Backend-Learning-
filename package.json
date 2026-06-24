@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "name": "backend-engineering",
+  "version": "1.0.0",
+  "description": "Monorepo wrapper for express-learning app",
+  "scripts": {
+    "start": "cd express-learning && npm start"
+  },
+  "workspaces": [
+    "express-learning"
+  ],
+  "dependencies": {
+    "dotenv": "^17.4.2"
+  }
+}
