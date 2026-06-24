@@ -8,6 +8,8 @@ const protect = require("../middleware/authMiddleware");
 
 const admin = require("../middleware/adminMiddleware");
 
+const upload = require("../middleware/uploadMiddleware");
+
 const { registerUser,loginUser } = require("../controllers/userController");
 
 router.post("/register", registerUser);
@@ -23,6 +25,13 @@ router.get("/profile", protect, async (req, res) => {
 router.get("/admin", protect, admin, (req, res) => {
   res.json({
     message: "Welcome Admin",
+  });
+});
+
+router.post("/upload", upload.single("file"), (req, res) => {
+  res.json({
+    message: "File uploaded",
+    file: req.file,
   });
 });
 
